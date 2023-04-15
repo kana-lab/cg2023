@@ -2,7 +2,7 @@ import {OrthographicCamera, Scene, WebGLRenderer,} from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 
-export abstract class Canvas {
+export class Canvas {
     renderer: WebGLRenderer
     camera: OrthographicCamera
     scene: Scene
@@ -46,5 +46,6 @@ export abstract class Canvas {
         r()
     }
 
-    abstract update(): void;
+    update(): void {
+    }
 }

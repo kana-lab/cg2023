@@ -3,7 +3,7 @@ import {
     BufferAttribute, BufferGeometry, Line, LineBasicMaterial,
     Points, PointsMaterial, Vector2,
 } from "three";
-import {DraggableGridCanvas} from "./canvas/draggable_grid_canvas";
+import {DraggableGridCanvas} from "./core/draggable_canvas";
 
 
 class SplineCanvas extends DraggableGridCanvas {
@@ -35,9 +35,6 @@ class SplineCanvas extends DraggableGridCanvas {
         const lineMaterial = new LineBasicMaterial({color: 0x0000ff})
         this.line = new Line(pointsGeometry, lineMaterial)
         this.scene.add(this.line)
-    }
-
-    update() {
     }
 
     onDrag(mouse: Vector2) {
