@@ -7,8 +7,32 @@
     <title>Vite + TS</title>
 </head>
 <body>
-<!--    <div id="app"></div>-->
+<h2>[utokyo-iscg-2023] Basic Assignment M1 (Spline)</h2>
 <canvas id="main-canvas"></canvas>
+<table>
+    <tr>
+        <td>Number of Controls:</td>
+        <td colspan="2"><input type="number" id="input_numctrls" onchange="draw();" step="1" min="3" value="3"></td>
+    </tr>
+    <tr>
+        <td>Number of Steps:</td>
+        <td colspan="2"><input type="number" id="input_numsteps" onchange="draw();" step="1" min="2" value="20"></td>
+    </tr>
+    <tr>
+        <td>Show Control Points:</td>
+        <td colspan="2"><input type="checkbox" id="input_show_controlpoints" onchange="draw();" checked></td>
+    </tr>
+    <tr>
+        <td>Show Sample Points:</td>
+        <td colspan="2"><input type="checkbox" id="input_show_samplepoints" onchange="draw();" checked></td>
+    </tr>
+</table>
+<h3>Usage:</h3>
+<ul>
+    <li>Drag: Move Control Points</li>
+    <li>Shift+Drag: Camera Pan</li>
+    <li>mousewheel: Camera Zoom</li>
+</ul>
 <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

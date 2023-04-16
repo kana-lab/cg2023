@@ -2,7 +2,7 @@ import {Canvas} from "./canvas";
 import {GridHelper, Vector2} from "three";
 
 export class DraggableCanvas extends Canvas {
-    protected constructor(canvasQuery: string) {
+    constructor(canvasQuery: string) {
         super(canvasQuery, false);
 
         // super()中でエラー処理が行われるので、ここではエラー処理は不要
@@ -14,7 +14,7 @@ export class DraggableCanvas extends Canvas {
             const mouse = new Vector2(x * 5, y * 5 * canvas.offsetHeight / canvas.offsetWidth);
             const delta3 = this.controls.object.position
             const delta2 = new Vector2(delta3.x, delta3.y)
-            return mouse.add(delta2).divideScalar(this.camera.zoom)
+            return mouse.divideScalar(this.camera.zoom).add(delta2)
         }
 
         // ドラッグの開始・修了を検知 (shiftが押されている場合を除く)
@@ -47,13 +47,13 @@ export class DraggableCanvas extends Canvas {
         })
     }
 
-    onDrag(_mouse: Vector2): void {
+    protected onDrag(_mouse: Vector2): void {
     }
 
-    onDragStart(_mouse: Vector2): void {
+    protected onDragStart(_mouse: Vector2): void {
     }
 
-    onDragEnd(_mouse: Vector2): void {
+    protected onDragEnd(_mouse: Vector2): void {
     }
 }
 
