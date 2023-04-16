@@ -9,11 +9,15 @@ export class Canvas {
     controls: OrbitControls
 
     protected constructor(canvasQuery: string, enableRotate = true) {
+        // TODO: エラー処理
+        const canvas = document.querySelector<HTMLElement>(canvasQuery)!
+
         // カメラの設定
         const near = 0.1
         const far = 1000
+        const height = canvas.offsetHeight / canvas.offsetWidth * 5
         this.camera = new OrthographicCamera(
-            -5, 5, 5, -5, near, far
+            -5, 5, height, -height, near, far
         )
         this.camera.position.set(0, 0, 100)
 
@@ -21,8 +25,6 @@ export class Canvas {
         this.scene = new Scene()
 
         // レンダラーの設定
-        // TODO: エラー処理
-        const canvas = document.querySelector<HTMLElement>(canvasQuery)!
         this.renderer = new WebGLRenderer({
             canvas,
             // antialias: true,
