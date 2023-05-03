@@ -12,6 +12,9 @@ import {DraggableGridCanvas} from "./core/draggable_canvas";
 
 
 export class SplineCanvas extends DraggableGridCanvas {
+    ctrlPoints: Points
+    ctrlLines: Line
+    samplePoints: Points
     ctrlGeometry: BufferGeometry
     needsUpdate: boolean
     sampleGeometry: BufferGeometry
@@ -32,13 +35,13 @@ export class SplineCanvas extends DraggableGridCanvas {
             color: 0x0000ff,
             size: 10,
         })
-        const ctrls = new Points(this.ctrlGeometry, ctrlMaterial)
-        this.scene.add(ctrls)
+        this.ctrlPoints = new Points(this.ctrlGeometry, ctrlMaterial)
+        this.scene.add(this.ctrlPoints)
 
         // 制御点間をつなぐ直線
         const ctrlLineMaterial = new LineBasicMaterial({color: 0x0000ff})
-        const ctrlLine = new Line(this.ctrlGeometry, ctrlLineMaterial)
-        this.scene.add(ctrlLine)
+        this.ctrlLines = new Line(this.ctrlGeometry, ctrlLineMaterial)
+        this.scene.add(this.ctrlLines)
 
         // スプラインのサンプル点をシーンに追加
         this.sampleGeometry = new BufferGeometry()
@@ -50,8 +53,8 @@ export class SplineCanvas extends DraggableGridCanvas {
             color: 0xffff00,
             size: 10
         })
-        const samples = new Points(this.sampleGeometry, sampleMaterial)
-        this.scene.add(samples)
+        this.samplePoints = new Points(this.sampleGeometry, sampleMaterial)
+        this.scene.add(this.samplePoints)
 
         // スプラインのサンプル点をつなぐ直線
         const sampleLineMaterial = new LineBasicMaterial({color: 0xffff00})
@@ -133,6 +136,17 @@ export class SplineCanvas extends DraggableGridCanvas {
         this.ctrlGeometry.setAttribute('position', buf)
         this.ctrlGeometry.getAttribute('position').needsUpdate = true
 
+        this.needsUpdate = true
+    }
+
+    setCtrlPointsVisible(visibility: boolean) {
+        this.ctrlPoints.visible = visibility
+        this.ctrlLines.visible = visibility
+        this.needsUpdate = true
+    }
+
+    setSamplePointsVisible(visibility: boolean) {
+        this.samplePoints.visible = visibility
         this.needsUpdate = true
     }
 }

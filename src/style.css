@@ -9,3 +9,24 @@ html, body {
     height: 50%;
     display: block;
 }
+
+.params {
+    width: fit-content;
+    border: 3px dashed darkblue;
+    padding: 1rem;
+    margin: 5px;
+}
+
+fieldset {
+    border-style: none;
+    margin-left: 1rem;
+}
+
+fieldset:disabled {
+    color: gray;
+}
+
+.separator {
+    height: 2px;
+    background-color: gray;
+}

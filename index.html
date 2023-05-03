@@ -9,30 +9,102 @@
 <body>
 <h2>[utokyo-iscg-2023] Basic Assignment M1 (Spline)</h2>
 <canvas id="main-canvas"></canvas>
-<table>
-    <tr>
-        <td>Number of Controls:</td>
-        <td colspan="2"><input type="number" id="input_numctrls" onchange="draw();" step="1" min="3" value="3"></td>
-    </tr>
-    <tr>
-        <td>Number of Steps:</td>
-        <td colspan="2"><input type="number" id="input_numsteps" onchange="draw();" step="1" min="2" value="20"></td>
-    </tr>
-    <tr>
-        <td>Show Control Points:</td>
-        <td colspan="2"><input type="checkbox" id="input_show_controlpoints" onchange="draw();" checked></td>
-    </tr>
-    <tr>
-        <td>Show Sample Points:</td>
-        <td colspan="2"><input type="checkbox" id="input_show_samplepoints" onchange="draw();" checked></td>
-    </tr>
-</table>
+<div style="display: flex;">
+    <div class="params">
+        <form>
+            <input type="radio" id="bezier" name="options" value="bezier"
+                   onchange="onRadioChange();"/>
+            <label for="bezier">Bezier</label><br>
+
+            <input type="radio" id="catmull-rom" name="options" value="catmull"
+                   onchange="onRadioChange();"/>
+            <label for="catmull-rom">Catmull-rom</label><br>
+
+            <fieldset id="subgroup" disabled>
+                <input type="radio" id="uniform" name="suboptions" value="uniform"
+                       onchange="onMethodChange()"/>
+                <label for="uniform">Uniform</label><br>
+
+                <input type="radio" id="chordal" name="suboptions" value="chordal"
+                       onchange="onMethodChange()"/>
+                <label for="chordal">Chordal</label><br>
+
+                <input type="radio" id="centripetal" name="suboptions" value="centripetal" checked
+                       onchange="onMethodChange()"/>
+                <label for="centripetal">Centripetal</label>
+            </fieldset>
+
+            <input type="radio" id="c2interpolation" name="options" value="c2interpolation"
+                   onchange="onRadioChange();" checked/>
+            <label for="c2interpolation">C^2 interpolating splines (bezier)</label>
+        </form>
+    </div>
+    <div class="params">
+        <table>
+            <tr>
+                <td>Number of Controls:</td>
+                <td colspan="2"><input type="number" id="input_numctrls" step="1" min="3" value="5"
+                                       onchange="cvs.setNumCtrlPoints(this.valueAsNumber);"></td>
+            </tr>
+            <tr>
+                <td>Number of Steps:</td>
+                <td colspan="2"><input type="number" id="input_numsteps" step="1" min="2" value="30"
+                                       onchange="cvs.setNumSteps(this.valueAsNumber);"></td>
+            </tr>
+            <tr>
+                <td>Show Control Points:</td>
+                <td colspan="2"><input type="checkbox" id="input_show_controlpoints" checked
+                                       onchange="cvs.setCtrlPointsVisible(this.checked);">
+                </td>
+            </tr>
+            <tr>
+                <td>Show Sample Points:</td>
+                <td colspan="2"><input type="checkbox" id="input_show_samplepoints" checked
+                                       onchange="cvs.setSamplePointsVisible(this.checked);">
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
 <h3>Usage:</h3>
 <ul>
     <li>Drag: Move Control Points</li>
     <li>Shift+Drag: Camera Pan</li>
     <li>mousewheel: Camera Zoom</li>
 </ul>
+<div class="separator"></div>
 <script type="module" src="/src/main.ts"></script>
+<script>
+    const onRadioChange = () => {
+        const subgroup = document.getElementById("subgroup")
+        const catmull_rom = document.getElementById("catmull-rom")
+        subgroup.disabled = !catmull_rom.checked
+        onMethodChange()
+    }
+
+    const onMethodChange = () => {
+        const splineKindGroup = document.getElementsByName("options")
+        let splineKind
+        for (let i = 0; i < splineKindGroup.length; ++i) {
+            const radio = splineKindGroup.item(i)
+            if (radio.checked) {
+                splineKind = radio.value
+                break
+            }
+        }
+
+        const knotKindGroup = document.getElementsByName("suboptions")
+        let knotKind
+        for (let i = 0; i < knotKindGroup.length; ++i) {
+            const radio = knotKindGroup.item(i)
+            if (radio.checked) {
+                knotKind = radio.value
+                break
+            }
+        }
+
+        cvs.setSplineMethod(splineKind, knotKind)
+    }
+</script>
 </body>
 </html>

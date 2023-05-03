@@ -34,14 +34,25 @@ const solve_cubic_equation = (a: number, b: number, c: number, d: number): numbe
     do {
         e = evaluate(x)
         x -= e / differential(x)
-    } while (e > 1e-6)
+    } while (Math.abs(e) > 1e-6)
 
     return x
 }
 
 class SplineCanvasEx extends SplineCanvas {
+    numSteps: number
+    splineKind: string
+    knotKind: string
+
+    constructor() {
+        super();
+        this.numSteps = 30
+        this.splineKind = "bezier"
+        this.knotKind = "centripetal"
+    }
+
     private bezier(ctrlPoints: Vector2[]): Float32Array {
-        const n = 15
+        const n = this.numSteps
         let result = []
 
         // bezier curve (n dim)
@@ -77,21 +88,20 @@ class SplineCanvasEx extends SplineCanvas {
     }
 
     private catmull_rom(ctrlPoints: Vector2[]): Float32Array {
-        const n = 30
+        const n = this.numSteps
         let result = []
 
         let knot = [0.]
         for (let i = 1; i < ctrlPoints.length; ++i) {
-            // uniform
-            // knot.push(i)
-
-            // chordal
-            // const dist = ctrlPoints[i - 1].distanceTo(ctrlPoints[i])
-            // knot.push(knot[i - 1] + dist)
-
-            // centripetal
-            const dist = ctrlPoints[i - 1].distanceTo(ctrlPoints[i])
-            knot.push(knot[i - 1] + dist ** 0.5)
+            if (this.knotKind == "uniform") {
+                knot.push(i)
+            } else if (this.knotKind == "chordal") {
+                const dist = ctrlPoints[i - 1].distanceTo(ctrlPoints[i])
+                knot.push(knot[i - 1] + dist)
+            } else {
+                const dist = ctrlPoints[i - 1].distanceTo(ctrlPoints[i])
+                knot.push(knot[i - 1] + dist ** 0.5)
+            }
         }
 
         const interval = knot[knot.length - 1] / n;
@@ -164,7 +174,7 @@ class SplineCanvasEx extends SplineCanvas {
             )
         }
 
-        const n = 30
+        const n = this.numSteps
         let result = []
 
         const interval = Math.PI / 2 * (ctrlPoints.length - 1) / n
@@ -230,11 +240,27 @@ class SplineCanvasEx extends SplineCanvas {
             ctrl_v.push(new Vector2(x, y))
         }
 
-        // return this.bezier(ctrl_v)
-        // return this.catmull_rom(ctrl_v)
-        return this.c2_interpolation(ctrl_v)
+        if (this.splineKind == "bezier") {
+            return this.bezier(ctrl_v)
+        } else if (this.splineKind == "catmull") {
+            return this.catmull_rom(ctrl_v)
+        } else {
+            return this.c2_interpolation(ctrl_v)
+        }
+    }
+
+    setNumSteps(n: number) {
+        this.numSteps = n
+        this.needsUpdate = true
+    }
+
+    setSplineMethod(splineKind: string, knotKind: string) {
+        this.splineKind = splineKind
+        this.knotKind = knotKind
+        this.needsUpdate = true
     }
 }
 
 const cvs = new SplineCanvasEx()
-cvs.animate()
+cvs.animate();
+(globalThis as any).cvs = cvs  // export
