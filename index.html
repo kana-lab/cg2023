@@ -73,6 +73,39 @@
     <li>mousewheel: Camera Zoom</li>
 </ul>
 <div class="separator"></div>
+
+<h2>実装内容の説明</h2>
+<p>
+    本課題では、まずGlitchのサンプルを真似たUIをvite + TypeScript + three.jsで作成した。
+    three.jsを使用した理由は、OpenGL ESは過去に書いた経験があるので、新しいライブラリにトライしてみようと
+    考えたからである。コードを書くに当たってChatGPT(GPT-3.5)を利用したが、これは主にクラスやメソッドを
+    検索するために利用し、コード全体の設計は自分で考えた。ChatGPTから得られた情報は全てthree.jsの公式の
+    リファレンスに載っているものであるので、何らかの規定に抵触することはないはずである。
+</p>
+<p>
+    スプラインに関する実装としては、「一般のベジェ曲線」「3次Catmull-Romスプライン」「C^2 interpolating splines」
+    の3つを実装した。ベジェ曲線については、de Casteljauのアルゴリズムを用いてサンプル点を求めるようにした。
+    また、Catmull-Romについては、ノット列の取り方として「Uniform」「Chordal」「Centripetal」の
+    3つを実装した。最後に、C^2 interpolating splinesについては、補間関数がベジェ曲線の場合を実装した。
+    そのベジェ曲線の制御点の取り方は、<i>Cem Yuksel, "A Class of C^2 interpolating Splines", 2020</i>に
+    記載されている方法に従った。この方法では3次方程式を解く必要が出てくるが、これはニュートン法を用いる事で解決した。
+    以上のスプラインに関する実装は、全てmain.ts内に書かれている。
+</p>
+
+<h2>考察・感想</h2>
+<p>
+    制御点を様々に変えてみた結果、C^2 interpolating splinesがもっとも自然に補間しているように感じた。
+    次点でCatmull-RomのCentripetalであり、他はこれらより不自然である傾向が強い。C^2 interpolating
+    splinesによる補間が自然に感じる理由としては、制御点が常に局所的に曲率最大の点となっているからであると
+    考えられる (そうなるように補間関数を取った)。Catmull-RomのCentripetalも、制御点が局所的に曲率最大の
+    点になっているように見える場合が多いが、まれに明らかにそうでない場合が生じるようである。
+    Uniformだとこれは顕著であり、制御点がないところで大きく曲がっていたりする。
+</p>
+<p>
+    本課題では(three.jsを用いたことにより)多量のコードを書く必要があったが、以上のように、
+    自然な補間という事の奥深さを知ることができ面白い課題であったと思う。
+</p>
+
 <script type="module" src="/src/main.ts"></script>
 <script>
     const onRadioChange = () => {
