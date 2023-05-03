@@ -4,8 +4,8 @@ import {GridHelper, Mesh, MeshBasicMaterial, PlaneGeometry} from "three";
 export class ExampleCanvas extends Canvas {
     mesh: Mesh
 
-    constructor(canvasQuery: string) {
-        super(canvasQuery, false);
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas, false);
 
         const geometry = new PlaneGeometry(5, 5, 5, 5)
         const material = new MeshBasicMaterial({
@@ -26,5 +26,6 @@ export class ExampleCanvas extends Canvas {
 }
 
 // [USAGE]
-// const cvs = new ExampleCanvas('#main-canvas')
+// const htmlCanvas = document.getElementById("main-canvas")
+// const cvs = new ExampleCanvas(htmlCanvas)
 // cvs.animate()

@@ -2,11 +2,8 @@ import {Canvas} from "./canvas";
 import {GridHelper, Vector2} from "three";
 
 export class DraggableCanvas extends Canvas {
-    constructor(canvasQuery: string) {
-        super(canvasQuery, false);
-
-        // super()中でエラー処理が行われるので、ここではエラー処理は不要
-        const canvas = document.querySelector<HTMLElement>(canvasQuery)!
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas, false);
 
         const getMousePos = (event: MouseEvent): Vector2 => {
             const x = (event.clientX - canvas.offsetLeft) / canvas.offsetWidth * 2 - 1
@@ -58,8 +55,8 @@ export class DraggableCanvas extends Canvas {
 }
 
 export class DraggableGridCanvas extends DraggableCanvas {
-    constructor(canvasQuery: string) {
-        super(canvasQuery);
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas);
 
         // グリッドをSceneに追加
         const gridHelper = new GridHelper(100, 100, 0x880000)

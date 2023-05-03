@@ -20,8 +20,8 @@ export class SplineCanvas extends DraggableGridCanvas {
     sampleGeometry: BufferGeometry
     draggingPoint: number | null
 
-    constructor() {
-        super('#main-canvas');
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas);
 
         this.needsUpdate = true
         this.draggingPoint = null

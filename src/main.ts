@@ -44,8 +44,8 @@ class SplineCanvasEx extends SplineCanvas {
     splineKind: string
     knotKind: string
 
-    constructor() {
-        super();
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas)
         this.numSteps = 30
         this.splineKind = "bezier"
         this.knotKind = "centripetal"
@@ -261,6 +261,7 @@ class SplineCanvasEx extends SplineCanvas {
     }
 }
 
-const cvs = new SplineCanvasEx()
+const htmlCanvas = document.getElementById("main-canvas")! as HTMLCanvasElement
+const cvs = new SplineCanvasEx(htmlCanvas)
 cvs.animate();
 (globalThis as any).cvs = cvs  // export

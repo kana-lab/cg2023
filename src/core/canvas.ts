@@ -8,10 +8,7 @@ export abstract class Canvas {
     scene: Scene
     controls: OrbitControls
 
-    protected constructor(canvasQuery: string, enableRotate = true) {
-        // TODO: エラー処理
-        const canvas = document.querySelector<HTMLElement>(canvasQuery)!
-
+    protected constructor(canvas: HTMLCanvasElement, enableRotate = true) {
         // カメラの設定
         const near = 0.1
         const far = 1000
