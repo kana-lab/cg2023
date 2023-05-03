@@ -19,8 +19,27 @@ const binarySearch = (arr: number[], x: number): number => {
     return i
 }
 
+// returns one of the roots of `ax^3 + bx^2 + cx + d = 0`
+const solve_cubic_equation = (a: number, b: number, c: number, d: number): number => {
+    const evaluate = (t: number): number => {
+        return a * t ** 3 + b * t ** 2 + c * t + d
+    }
+
+    const differential = (t: number): number => {
+        return 3 * a * t ** 2 + 2 * b * t + c
+    }
+
+    let x = Math.random()
+    let e: number
+    do {
+        e = evaluate(x)
+        x -= e / differential(x)
+    } while (e > 1e-6)
+
+    return x
+}
+
 class SplineCanvasEx extends SplineCanvas {
-    /*
     private bezier(ctrlPoints: Vector2[]): Float32Array {
         const n = 15
         let result = []
@@ -56,7 +75,6 @@ class SplineCanvasEx extends SplineCanvas {
         result.push(0.)
         return new Float32Array(result)
     }
-     */
 
     private catmull_rom(ctrlPoints: Vector2[]): Float32Array {
         const n = 30
@@ -128,6 +146,82 @@ class SplineCanvasEx extends SplineCanvas {
         return new Float32Array(result)
     }
 
+    private c2_interpolation(ctrlPoints: Vector2[]): Float32Array {
+        let bezier = [new Vector2()]
+        for (let i = 1; i < ctrlPoints.length - 1; ++i) {
+            const [p, q, r] = [ctrlPoints[i + 1], ctrlPoints[i], ctrlPoints[i - 1]]
+            const a = p.clone().sub(r).lengthSq()
+            const b = 3 * p.clone().sub(r).dot(r.clone().sub(q))
+            const c = r.clone().multiplyScalar(3).addScaledVector(q, -2).sub(p)
+                .dot(r.clone().sub(q))
+            const d = -r.clone().sub(q).lengthSq()
+            const t = solve_cubic_equation(a, b, c, d)
+            bezier.push(
+                q.clone()
+                    .addScaledVector(r, -((1 - t) ** 2))
+                    .addScaledVector(p, -(t ** 2))
+                    .divideScalar(2 * (1 - t) * t)
+            )
+        }
+
+        const n = 30
+        let result = []
+
+        const interval = Math.PI / 2 * (ctrlPoints.length - 1) / n
+        for (let j = 0; j < n; ++j) {
+            const i = Math.floor((interval * j) / (Math.PI / 2))
+            const theta = (interval * j) % (Math.PI / 2)
+            const normalized_theta = theta / Math.PI
+
+            const a1 = new Vector2()
+            if (i > 0)
+                a1
+                    .addScaledVector(bezier[i], normalized_theta + 0.5)
+                    .addScaledVector(ctrlPoints[i - 1], 0.5 - normalized_theta)
+            const a2 = new Vector2()
+                .addScaledVector(ctrlPoints[i + 1], normalized_theta + 0.5)
+                .addScaledVector(bezier[i], 0.5 - normalized_theta)
+            const b1 = new Vector2()
+                .addScaledVector(a2, normalized_theta + 0.5)
+                .addScaledVector(a1, 0.5 - normalized_theta)
+
+            const a3 = new Vector2()
+            if (i < ctrlPoints.length - 2)
+                a3
+                    .addScaledVector(bezier[i + 1], normalized_theta)
+                    .addScaledVector(ctrlPoints[i], 1 - normalized_theta)
+            const a4 = new Vector2()
+            if (i < ctrlPoints.length - 2)
+                a4
+                    .addScaledVector(ctrlPoints[i + 2], normalized_theta)
+                    .addScaledVector(bezier[i + 1], 1 - normalized_theta)
+            const b2 = new Vector2()
+                .addScaledVector(a4, normalized_theta)
+                .addScaledVector(a3, 1 - normalized_theta)
+            const c = new Vector2()
+                .addScaledVector(b1, Math.cos(theta) ** 2)
+                .addScaledVector(b2, Math.sin(theta) ** 2)
+
+            if (i == 0) {
+                result.push(b2.x)
+                result.push(b2.y)
+            } else if (i == ctrlPoints.length - 2) {
+                result.push(b1.x)
+                result.push(b1.y)
+            } else {
+                result.push(c.x)
+                result.push(c.y)
+            }
+            result.push(0.)
+        }
+
+        const last = ctrlPoints.pop()!
+        result.push(last.x)
+        result.push(last.y)
+        result.push(0.)
+        return new Float32Array(result)
+    }
+
     protected spline(ctrlPoints: Readonly<BufferAttribute>): Float32Array {
         let ctrl_v = []
         for (let i = 0; i < ctrlPoints.count; ++i) {
@@ -137,7 +231,8 @@ class SplineCanvasEx extends SplineCanvas {
         }
 
         // return this.bezier(ctrl_v)
-        return this.catmull_rom(ctrl_v)
+        // return this.catmull_rom(ctrl_v)
+        return this.c2_interpolation(ctrl_v)
     }
 }
 

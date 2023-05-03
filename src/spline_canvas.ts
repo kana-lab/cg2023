@@ -106,6 +106,7 @@ export class SplineCanvas extends DraggableGridCanvas {
             const position = this.ctrlGeometry.getAttribute('position') as BufferAttribute
             const buf = new BufferAttribute(this.spline(position), 3)
             this.sampleGeometry.setAttribute('position', buf)
+            this.needsUpdate = false
         }
     }
 
